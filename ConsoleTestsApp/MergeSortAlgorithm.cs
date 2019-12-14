@@ -51,9 +51,9 @@ namespace ConsoleTestsApp
             {
                 numbers[counter++] = LeftArray[n1++];
             }
-            while (n1 < RightArray.Count)
+            while (n2 < RightArray.Count)
             {
-                numbers[counter++] = RightArray[n1++];
+                numbers[counter++] = RightArray[n2++];
             }
         }
     }
