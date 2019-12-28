@@ -50,6 +50,7 @@
     <Compile Include="CardGame.cs" />
     <Compile Include="Comparable.cs" />
     <Compile Include="Inheritance.cs" />
+    <Compile Include="LinkedList.cs" />
     <Compile Include="MergeSortAlgorithm.cs" />
     <Compile Include="MultiThreading.cs" />
     <Compile Include="Program.cs" />

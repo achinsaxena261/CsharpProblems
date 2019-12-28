@@ -8,6 +8,7 @@ namespace ConsoleTestsApp
     {
         public static void Main(string[] args)
         {
+            //Test code here
             Console.Read();
         }
     }
