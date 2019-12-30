@@ -10,7 +10,8 @@ namespace ConsoleTestsApp
     {
         Blank,
         Cross,
-        Circle
+        Circle,
+        Draw
     }
 
     public class Move
@@ -18,6 +19,9 @@ namespace ConsoleTestsApp
         public Symbole Symbole { get; set; }
         public Tuple<int, int> Position { get; set; }
     }
+
+    public delegate bool UserActionDelegate(Symbole symbole);
+
     public class TicTacToe
     {
         private Move[,] moves = new Move[3, 3];
@@ -47,13 +51,13 @@ namespace ConsoleTestsApp
                     }
                     else
                     {
-                        var cellPosition = GetRenderPosition(row, col);
+                        var cellPosition = GetCellPosition(GetRenderPosition(row, col));
                         if(cellPosition == null)
                             Console.Write("   ");
                         else
                         {
                             var value = (Move)moves.GetValue(cellPosition.Item1, cellPosition.Item2);
-                            Console.Write(" {0} ", value.Symbole == Symbole.Cross ? 'X': value.Symbole == Symbole.Circle ? 'O': ' ');
+                            Console.Write(" {0} ", value.Symbole == Symbole.Cross ? "X": value.Symbole == Symbole.Circle ? "O": Convert.ToString(GetRenderPosition(row, col)));
                         }
                     }
                 }
@@ -61,28 +65,28 @@ namespace ConsoleTestsApp
             }
         }
 
-        private Tuple<int, int> GetRenderPosition(int x, int y)
+        private int GetRenderPosition(int x, int y)
         {
             if (x == 1 && y == 1)
-                return GetCellPosition(0);
+                return 0;
             else if (x == 1 && y == 5)
-                return GetCellPosition(1);
+                return 1;
             else if (x == 1 && y == 9)
-                return GetCellPosition(2);
+                return 2;
             else if (x == 5 && y == 1)
-                return GetCellPosition(3);
+                return 3;
             else if (x == 5 && y == 5)
-                return GetCellPosition(4);
+                return 4;
             else if (x == 5 && y == 9)
-                return GetCellPosition(5);
+                return 5;
             else if (x == 9 && y == 1)
-                return GetCellPosition(6);
+                return 6;
             else if (x == 9 && y == 5)
-                return GetCellPosition(7);
+                return 7;
             else if (x == 9 && y == 9)
-                return GetCellPosition(8);
+                return 8;
             else
-                return GetCellPosition(-1);
+                return -1;
         }
 
         private Tuple<int, int> GetCellPosition(int i)
@@ -125,13 +129,13 @@ namespace ConsoleTestsApp
                     if (move.Symbole == Symbole.Blank)
                     {
                         move.Symbole = player % 2 == 0 ? Symbole.Circle : Symbole.Cross;
-                        finished = PlayMove(move);
+                        finished = PlayMove(move, UserAction);
                         player++;
                     }
                     if (player > 9 && !finished)
                     {
                         player = 1;
-                        finished = UserAction(' ');
+                        finished = UserAction(Symbole.Draw);
                     }
                 }
                 Console.Clear();
@@ -139,17 +143,17 @@ namespace ConsoleTestsApp
             while (!finished);
         }
 
-        private bool PlayMove(Move move)
+        private bool PlayMove(Move move, UserActionDelegate userActionDelegate)
         {
             bool gameover = false;
             moves.SetValue(move, move.Position.Item1, move.Position.Item2);
             switch (CheckState())
             {
                 case Symbole.Circle:
-                    gameover = UserAction('O');
+                    gameover = userActionDelegate(Symbole.Circle);
                     break;
                 case Symbole.Cross:
-                    gameover = UserAction('X');
+                    gameover = userActionDelegate(Symbole.Cross);
                     break;
                 default:
                     gameover = false;
@@ -158,14 +162,14 @@ namespace ConsoleTestsApp
             return gameover;
         }
 
-        private bool UserAction(char symbole)
+        private bool UserAction(Symbole symbole)
         {
             Console.Clear();
             RenderBoard(moves);
-            if (char.IsWhiteSpace(symbole))
-                Console.Write("\nmatch drawn ");
+            if (symbole == Symbole.Draw)
+                Console.Write("\nmatch drawn. ");
             else
-                Console.Write("\nPlayer '{0}' wins ", symbole);
+                Console.Write("\nPlayer '{0}' wins. ", symbole == Symbole.Circle ? 'O' : 'X');
             Console.Write("play again? [Y/N]: ");
             ConsoleKeyInfo keyinfo = Console.ReadKey();
             if (keyinfo.Key == ConsoleKey.Y)
