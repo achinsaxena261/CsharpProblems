@@ -20,7 +20,7 @@ namespace ConsoleTestsApp
     }
     public class TicTacToe
     {
-        private Move[,] moves = new Move[3,3];
+        private Move[,] moves = new Move[3, 3];
         public void ResetGame()
         {
             for (int i = 0; i < 3; i++)
@@ -33,11 +33,11 @@ namespace ConsoleTestsApp
         }
         private void RenderBoard(Move[,] moves)
         {
-            for(int row = 0; row < 11; row++)
+            for (int row = 0; row < 11; row++)
             {
                 for (int col = 0; col < 11; col++)
                 {
-                    if(col == 3 || col == 7)
+                    if (col == 3 || col == 7)
                     {
                         Console.Write("|");
                     }
@@ -47,11 +47,42 @@ namespace ConsoleTestsApp
                     }
                     else
                     {
-                        Console.Write("   ");
+                        var cellPosition = GetRenderPosition(row, col);
+                        if(cellPosition == null)
+                            Console.Write("   ");
+                        else
+                        {
+                            var value = (Move)moves.GetValue(cellPosition.Item1, cellPosition.Item2);
+                            Console.Write(" {0} ", value.Symbole == Symbole.Cross ? 'X': value.Symbole == Symbole.Circle ? 'O': ' ');
+                        }
                     }
                 }
                 Console.WriteLine();
             }
+        }
+
+        private Tuple<int, int> GetRenderPosition(int x, int y)
+        {
+            if (x == 1 && y == 1)
+                return GetCellPosition(0);
+            else if (x == 1 && y == 5)
+                return GetCellPosition(1);
+            else if (x == 1 && y == 9)
+                return GetCellPosition(2);
+            else if (x == 5 && y == 1)
+                return GetCellPosition(3);
+            else if (x == 5 && y == 5)
+                return GetCellPosition(4);
+            else if (x == 5 && y == 9)
+                return GetCellPosition(5);
+            else if (x == 9 && y == 1)
+                return GetCellPosition(6);
+            else if (x == 9 && y == 5)
+                return GetCellPosition(7);
+            else if (x == 9 && y == 9)
+                return GetCellPosition(8);
+            else
+                return GetCellPosition(-1);
         }
 
         private Tuple<int, int> GetCellPosition(int i)
@@ -97,6 +128,11 @@ namespace ConsoleTestsApp
                         finished = PlayMove(move);
                         player++;
                     }
+                    if (player > 9 && !finished)
+                    {
+                        player = 1;
+                        finished = UserAction(' ');
+                    }
                 }
                 Console.Clear();
             }
@@ -124,14 +160,20 @@ namespace ConsoleTestsApp
 
         private bool UserAction(char symbole)
         {
-            Console.Write("\nPlayer '{0}' wins play again? [Y/N]: ", symbole);
+            Console.Clear();
+            RenderBoard(moves);
+            if (char.IsWhiteSpace(symbole))
+                Console.Write("\nmatch drawn ");
+            else
+                Console.Write("\nPlayer '{0}' wins ", symbole);
+            Console.Write("play again? [Y/N]: ");
             ConsoleKeyInfo keyinfo = Console.ReadKey();
-            if(keyinfo.Key == ConsoleKey.Y)
+            if (keyinfo.Key == ConsoleKey.Y)
             {
                 ResetGame();
                 return false;
             }
-            else if(keyinfo.Key == ConsoleKey.N)
+            else if (keyinfo.Key == ConsoleKey.N)
             {
                 return true;
             }
@@ -143,7 +185,7 @@ namespace ConsoleTestsApp
 
         private Symbole CheckState()
         {
-            for(int i = 0, j=0; i < 3 && j < 3; i++, j++)
+            for (int i = 0, j = 0; i < 3 && j < 3; i++, j++)
             {
                 if (moves[i, 0].Symbole == moves[i, 1].Symbole && moves[i, 1].Symbole == moves[i, 2].Symbole)
                 {
