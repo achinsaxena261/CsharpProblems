@@ -58,6 +58,7 @@
     <Compile Include="QuickSortAlgorithm.cs" />
     <Compile Include="SortedUrls.cs" />
     <Compile Include="Stats.cs" />
+    <Compile Include="TicTacToe.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
